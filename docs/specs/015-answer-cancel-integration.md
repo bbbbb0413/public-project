@@ -1,7 +1,7 @@
 ---
 id: SPEC-015
 title: 답변 생성 중단 UI 연동 및 백엔드 취소 감지 처리
-status: ready
+status: done
 targets: [front, python-server]
 stages: [frontend, backend, qa]
 priority: high
