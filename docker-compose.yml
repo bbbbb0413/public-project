@@ -273,8 +273,9 @@ services:
       ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
       OPENAI_API_KEY: ${OPENAI_API_KEY:-}
       GOOGLE_API_KEY: ${GOOGLE_API_KEY:-}
+      GOOGLE_EMBEDDING_MODEL: ${GOOGLE_EMBEDDING_MODEL:-gemini-embedding-001}
       GROQ_API_KEY: ${GROQ_API_KEY:-}
-      GROQ_MODEL: ${GROQ_MODEL:-llama-3.3-70b-versatile}
+      GROQ_MODEL: ${GROQ_MODEL:-openai/gpt-oss-120b}
 
       # qwen3-embedding:4b(OLLAMA_EMBEDDING_MODEL) 출력 차원. Qdrant 컬렉션/시맨틱 캐시 벡터 크기와 반드시 일치해야 함.
       EMBEDDING_DIMENSION: ${EMBEDDING_DIMENSION:-2560}
