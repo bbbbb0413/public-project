@@ -1,7 +1,7 @@
 ---
 id: SPEC-017
 title: 채팅 게이트웨이 웹소켓 연결 시 인증 정보 주입 및 오류 처리 개선
-status: ready
+status: done
 targets: [server]
 stages: [backend, qa]
 priority: normal
