@@ -219,10 +219,19 @@ services:
     command: node dist/apps/admin-server/src/main.js
     environment:
       NODE_ENV: ${NODE_ENV:-production}
+      AUTH_GRPC_URL: "0.0.0.0:50054"
       IDENTITY_GRPC_URL: "identity:50051"
       REDIS_DB_HOST: redis
       REDIS_DB_PORT: 6379
+      PERSONAL_DB_HOST: db
+      PERSONAL_DB_PORT: 3306
+      PERSONAL_DB_USER_NAME: ${DB_USER}
+      PERSONAL_DB_USER_PW: ${DB_USER_PW}
+      PERSONAL_DB_NAME: personal
+      PERSONAL_DB_SYNCHRONIZE: "true"
+      ACCESS_TOKEN_SECRET: ${ACCESS_TOKEN_SECRET}
     depends_on:
+      - db
       - redis
       - identity
 
@@ -241,6 +250,7 @@ services:
       IDENTITY_GRPC_URL: "identity:50051"
       PAYMENT_GRPC_URL: "payment:50052"
       CHAT_GRPC_URL: "chat-service:50053"
+      AUTH_GRPC_URL: "admin-server:50054"
       KAFKA_BROKERS: kafka:29092
       AI_SERVICE_PY_URL: http://ai-service-py:3004
       REDIS_DB_HOST: redis
@@ -265,6 +275,8 @@ services:
       payment:
         condition: service_started
       chat-service:
+        condition: service_started
+      admin-server:
         condition: service_started
       kafka:
         condition: service_healthy
