@@ -252,7 +252,7 @@ gateway를 제외한 모든 서비스는 docker 네트워크 내부에서만 접
 | **payment**<br><sub>`apps/payment`</sub> | 결제 생성·조회. | gRPC `:50052` | MySQL(payment) |
 | **chat-service**<br><sub>`apps/chat-service`</sub> | 채팅방·메시지 도메인 데이터 제공. 실시간 릴레이는 담당하지 않음(gateway 소유). | gRPC `:50053` | Redis |
 | **admin-server**<br><sub>`apps/admin-server`</sub> | 관리자 인증·회원가입·유저 관리, 가입 메일 큐 컨슈머. | gRPC `:50054` | MySQL(personal), Redis(Bull) |
-| **ai-service-py**<br><sub>`public-python-server`</sub> | RAG 질의응답, 지식베이스 인제스트, 프롬프트 관리, LLM 게이트웨이·관측성. Clean Architecture(도메인/애플리케이션/인프라/프레젠테이션). | HTTP `:3004` + Kafka consumer | MongoDB, Qdrant, Redis |
+| **ai-service-py**<br><sub>`public-python-server`</sub> | RAG 질의응답, 지식베이스 인제스트, 프롬프트 관리, LLM 게이트웨이·관측성. 기능별 모듈 구조 — 기능 디렉토리마다 `router`·`service`·`repository`·`schemas`·`dependencies` 를 두고 공통 설정은 `core/` 에 모은다. | HTTP `:3004` + Kafka consumer | MongoDB, Qdrant, Redis |
 | **frontend**<br><sub>`public-front`</sub> | 웹 프론트엔드 + Admin Panel(모드 전환). React + Vite. | HTTP `:5175` | — |
 
 ## 인프라 레퍼런스

@@ -8,9 +8,9 @@ priority: normal
 ---
 
 ## 배경 / 문제
-이전 작업(SPEC-011)에서 대화 세션 복원 시 출처 및 신뢰도/누락 정보 복원 인터페이스를 구현하였으나, `public-python-server/src/ai_service/rag/infrastructure/messaging/ask_requested_consumer.py:160-164` 에서 실시간 답변 스트리밍 완료 후 `session.append_turn` 호출 시 `sources` 만 전달하고 `confidence` 와 `missing` 인자를 전달하지 않아 세션 DB에 신뢰도 정보가 `None` 으로 저장되어 영속화되지 않는 결함이 발생하고 있다.
-`public-python-server/src/ai_service/rag/domain/model/conversation_session.py:80-97` 의 `append_turn` 메서드는 `confidence` 와 `missing` 인자를 받도록 준비되어 있으나, 호출부의 누락으로 인해 세션을 다시 열었을 때 신뢰도 배지와 확인하지 못한 항목이 복원되지 않고 유실된다.
-또한 프론트엔드 `public-front/src/components/AiService.tsx:524-541` 및 `public-front/src/components/AiService.css:738-758` 에서는 신뢰도 배지가 수치(%)와 상관없이 고정된 녹색(`#34d399`) 단일 스타일로만 렌더링된다. 이로 인해 신뢰도가 매우 낮은 답변(예: 30%)도 신뢰도가 높은 답변과 동일하게 긍정적인 초록색으로 표시되어 사용자가 부정확하거나 근거가 부족한 답변을 판별하기 어려운 문제가 있다.
+이전 작업(SPEC-011)에서 대화 세션 복원 시 출처 및 신뢰도/누락 정보 복원 인터페이스를 구현하였으나, `public-python-server/src/ai_service/rag/infrastructure/messaging/ask_requested_consumer.py:166-169` 에서 실시간 답변 스트리밍 완료 후 `session.append_turn` 호출 시 `sources` 만 전달하고 `confidence` 와 `missing` 인자를 전달하지 않아 세션 DB에 신뢰도 정보가 `None` 으로 저장되어 영속화되지 않는 결함이 발생하고 있다.
+`public-python-server/src/ai_service/rag/schemas.py:162-169` 의 `append_turn` 메서드는 `confidence` 와 `missing` 인자를 받도록 준비되어 있으나, 호출부의 누락으로 인해 세션을 다시 열었을 때 신뢰도 배지와 확인하지 못한 항목이 복원되지 않고 유실된다.
+또한 프론트엔드 `public-front/src/components/AiService.tsx:640-644` 및 `public-front/src/components/AiService.css:762-790` 에서는 신뢰도 배지가 수치(%)와 상관없이 고정된 녹색(`#34d399`) 단일 스타일로만 렌더링된다. 이로 인해 신뢰도가 매우 낮은 답변(예: 30%)도 신뢰도가 높은 답변과 동일하게 긍정적인 초록색으로 표시되어 사용자가 부정확하거나 근거가 부족한 답변을 판별하기 어려운 문제가 있다.
 
 ## 요구사항
 - [ ] `public-python-server` 의 `ask_requested_consumer.py` 에서 RAG 답변 완료 후 세션에 턴을 추가할 때 수집된 `last_confidence` 와 `last_missing` 을 `session.append_turn` 에 함께 전달하여 영속화한다.
@@ -37,7 +37,9 @@ priority: normal
 - Given `confidence` 가 `undefined` 또는 `None` 인 레거시 세션 턴을 불러올 때 When 화면에 렌더링되면 Then 신뢰도 배지가 렌더링되지 않고 텍스트 본문만 정상 노출된다.
 
 ## 참고
-- 고쳐야 할 자리: `public-python-server/src/ai_service/rag/infrastructure/messaging/ask_requested_consumer.py:160-164`
-- 고쳐야 할 자리: `public-front/src/components/AiService.tsx:524-541`
-- 고쳐야 할 자리: `public-front/src/components/AiService.css:738-758`
-- 관련 세션 도메인 메서드: `public-python-server/src/ai_service/rag/domain/model/conversation_session.py:80-97`
+- 고쳐야 할 자리: `public-python-server/src/ai_service/rag/infrastructure/messaging/ask_requested_consumer.py:166-169` (`append_turn` 호출)
+- 고쳐야 할 자리: `public-front/src/components/AiService.tsx:640-644` (`confidence-badge` 렌더링)
+- 고쳐야 할 자리: `public-front/src/components/AiService.css:762-790`
+- 관련 세션 모델 메서드: `public-python-server/src/ai_service/rag/schemas.py:162-169` (`ConversationSession.append_turn`)
+
+> 2026-08-27 의 기능별 모듈 구조 전환으로 세션 모델이 `rag/domain/model/conversation_session.py` 에서 `public-python-server/src/ai_service/rag/schemas.py:115` 로 옮겨졌다. 결함 자체는 그대로 남아 있다 — 호출부가 여전히 `sources` 만 넘긴다.

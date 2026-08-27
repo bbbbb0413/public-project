@@ -13,6 +13,19 @@ version: 1
 specs:
   dir: docs/specs
 
+plan:
+  map: docs/PROJECT-MAP.md
+  direction: docs/PRODUCT.md
+  # 지도를 만든 뒤 타깃 전체에 이만큼 커밋이 쌓이면 조사가 다시 만든다.
+  #
+  # 기본값 20 으로 두었더니 2026-08-27 의 리팩터링(세 저장소 합쳐 25커밋)이
+  # 지도를 통째로 낡게 만들고도 한동안 그대로 쓰일 상태가 됐다. 타깃이 셋이라
+  # 20 은 저장소당 7커밋도 안 되는 값이고, 그 사이 파일이 옮겨지면 기획이 없는
+  # 좌표를 물려받는다. 조사 한 번은 에이전트 호출 하나라 8 이면 비용이 감당된다.
+  map_stale_commits: 8
+  min_citations: 3
+  min_verified_citations: 2
+
 git:
   branch_pattern: "feat/{spec_id}-{slug}"
   commit_pattern: "{type}: {title} ({spec_id})"
