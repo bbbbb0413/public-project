@@ -20,6 +20,11 @@ services:
     entrypoint: ["/bin/bash", "/init-db.sh"]
     ports:
       - "3306:3306"
+    deploy:
+      resources:
+        limits:
+          cpus: "1.5"
+          memory: 1G
 
   redis:
     container_name: redis
@@ -34,7 +39,8 @@ services:
     deploy:
       resources:
         limits:
-          memory: 256M
+          cpus: "0.5"
+          memory: 320M
 
   qdrant:
     container_name: qdrant
@@ -44,6 +50,11 @@ services:
       - "6333:6333"
     volumes:
       - qdrant_data:/qdrant/storage
+    deploy:
+      resources:
+        limits:
+          cpus: "0.75"
+          memory: 768M
 
   mongo:
     image: mongodb/mongodb-atlas-local:latest
@@ -58,6 +69,11 @@ services:
     volumes:
       - mongo_data:/data/db
       - mongo_configdb:/data/configdb
+    deploy:
+      resources:
+        limits:
+          cpus: "0.75"
+          memory: 768M
 
   kafka:
     container_name: kafka
@@ -65,6 +81,11 @@ services:
     restart: unless-stopped
     ports:
       - "9092:9092"
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 1G
     environment:
       KAFKA_NODE_ID: 1
       KAFKA_PROCESS_ROLES: broker,controller
@@ -100,6 +121,11 @@ services:
           /opt/kafka/bin/kafka-topics.sh --bootstrap-server kafka:29092 --create --if-not-exists --topic "$$topic" --partitions 3 --replication-factor 1
         done
     restart: "no"
+    deploy:
+      resources:
+        limits:
+          cpus: "0.25"
+          memory: 128M
 
   identity:
     container_name: identity
@@ -142,6 +168,11 @@ services:
       - db
       - redis
       - mongo
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 384M
 
   payment:
     container_name: payment
@@ -156,6 +187,7 @@ services:
       SERVER_PORT: 8081
       PORT: 8081
       PAYMENT_GRPC_URL: "0.0.0.0:50052"
+      KAFKA_BROKERS: kafka:29092
       REDIS_DB_HOST: redis
       REDIS_DB_PORT: 6379
       CHAT_REDIS_HOST: redis
@@ -179,6 +211,7 @@ services:
       PAYMENT_DB_USER_PW: ${DB_USER_PW}
       PAYMENT_DB_NAME: payment
       PAYMENT_DB_SYNCHRONIZE: "true"
+      DB_CONNECTION_LIMIT: "50"
       ACCESS_TOKEN_SECRET: ${ACCESS_TOKEN_SECRET}
       REFRESH_TOKEN_SECRET: ${REFRESH_TOKEN_SECRET}
       ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-http://localhost:5175}
@@ -187,6 +220,12 @@ services:
     depends_on:
       - db
       - redis
+      - kafka
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 384M
 
   chat-service:
     container_name: chat-service
@@ -207,6 +246,11 @@ services:
       ACCESS_TOKEN_SECRET: ${ACCESS_TOKEN_SECRET}
     depends_on:
       - redis
+    deploy:
+      resources:
+        limits:
+          cpus: "0.25"
+          memory: 256M
 
   # 회원가입 시 identity가 발행하는 'mail' 큐를 구독해서 실제 메일 발송(gRPC SendMail 호출)을 처리한다.
   admin-server:
@@ -234,6 +278,11 @@ services:
       - db
       - redis
       - identity
+    deploy:
+      resources:
+        limits:
+          cpus: "0.25"
+          memory: 256M
 
   gateway:
     container_name: gateway
@@ -282,6 +331,11 @@ services:
         condition: service_healthy
       ai-service-py:
         condition: service_started
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 512M
 
   # 구버전 NestJS ai-service(v1)는 폐기. Gateway가 Kafka/HTTP로 ai-service-py에 직접 프록시한다.
   ai-service-py:
@@ -330,6 +384,11 @@ services:
       qdrant:
         condition: service_started
     restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 768M
 
   frontend:
     container_name: frontend
@@ -343,6 +402,11 @@ services:
     depends_on:
       - gateway
       - identity
+    deploy:
+      resources:
+        limits:
+          cpus: "0.25"
+          memory: 256M
 
 volumes:
   mysql_data:
