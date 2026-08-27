@@ -208,6 +208,24 @@ services:
     depends_on:
       - redis
 
+  # 회원가입 시 identity가 발행하는 'mail' 큐를 구독해서 실제 메일 발송(gRPC SendMail 호출)을 처리한다.
+  admin-server:
+    container_name: admin-server
+    platform: linux/x86_64
+    build:
+      context: ./public-server
+      args:
+        APP_NAME: admin-server
+    command: node dist/apps/admin-server/src/main.js
+    environment:
+      NODE_ENV: ${NODE_ENV:-production}
+      IDENTITY_GRPC_URL: "identity:50051"
+      REDIS_DB_HOST: redis
+      REDIS_DB_PORT: 6379
+    depends_on:
+      - redis
+      - identity
+
   gateway:
     container_name: gateway
     platform: linux/x86_64
