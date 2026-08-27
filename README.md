@@ -226,13 +226,13 @@ sequenceDiagram
   GW->>AI: POST /prompts {name, content, userId}
   GW->>AI: PATCH /prompts/:name/:v/activate?userId=…
   AI->>M: 해당 유저 소유 버전만 활성화
-  AI-->>GW
+  AI-->>GW: 활성화 완료
   GW-->>FE: 저장 즉시 반영
 
   FE->>GW: GET /ai/my-prompt
   GW->>AI: GET /prompts/:name/active?userId=…
   AI->>M: find_active_for_user → 없으면 find_active(전역) → 없으면 기본값
-  AI-->>GW
+  AI-->>GW: 해석된 프롬프트
   GW-->>FE: 현재 적용 중인 프롬프트
 ```
 
