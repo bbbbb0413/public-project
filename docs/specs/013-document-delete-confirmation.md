@@ -1,7 +1,7 @@
 ---
 id: SPEC-013
 title: 지식베이스 문서 삭제 확인 대화상자 및 진행 상태 피드백
-status: ready
+status: done
 targets: [front]
 stages: [frontend, qa]
 priority: normal
