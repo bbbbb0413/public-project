@@ -1,7 +1,7 @@
 ---
 id: SPEC-023
 title: 답변 근거 확인 — 원문 위치 이동, 관련도 순위
-status: draft
+status: done
 targets: [server, front]
 stages: [backend, frontend]
 priority: high
@@ -37,4 +37,28 @@ priority: high
 - 답변 평가/피드백 — [[024-answer-feedback]].
 
 ## 구현 기록
-(구현 완료 후 작성)
+
+**SPEC-006과의 상충은 이번 명세서 우선으로 해결**: 원문 열람 기능을 새로 만들었다. 원본 파일 저장소는 사용자가 MongoDB GridFS를 지정.
+
+### 백엔드 (python-server)
+- `DocumentRepository`에 GridFS 기반 원본 파일 저장소 추가(`AsyncIOMotorGridFSBucket`, 버킷명 `knowledge_files`, `document_id`를 GridFS `filename`으로 사용). `save_original_file` / `get_original_file` / `_delete_original_file` 신설, `remove()`가 문서 삭제 시 원본도 함께 지움.
+- `IngestDocumentUseCase.execute()`가 텍스트 추출/청킹 이전에 업로드 원본 바이트를 무조건 GridFS에 먼저 저장(추출/처리가 이후 실패해도 원본은 남도록 `try` 블록 밖에 배치). 재인제스트 시 기존 원본을 지우고 새로 저장.
+- 신규 엔드포인트 `GET /knowledge/documents/{document_id}/file` — 원본이 없으면 404, 있으면 `Content-Disposition: inline`으로 바이너리 그대로 반환.
+- `ask_use_case.py`(단순 경로)와 `agentic_ask_use_case.py`(에이전틱 경로) 양쪽의 sources 페이로드에 `score` 필드 추가 — `SimilaritySearchResult.score`는 이미 RRF 융합/리랭커를 거치며 정렬된 채로 존재했으므로 그대로 실어보내기만 하면 됐다(파이프라인 재작업 불필요).
+- 테스트: `tests/unit/knowledge/test_document_repository.py` 신규 6건(저장/재저장/조회/메타데이터 fallback/삭제). Motor의 `AsyncIOMotorGridFSBucket`이 mock DB를 거부하는 문제는 `DocumentRepository.__new__`로 `__init__`을 우회하고 `_collection`/`_gridfs`를 직접 mock 주입해 해결. 전체 80/80 통과, ruff/mypy clean.
+
+### 게이트웨이 (NestJS)
+- `AiServicePyHttpService`에 `getBinary()` 추가(`responseType: 'arraybuffer'`로 프록시, `content-type`/`content-disposition` 헤더 그대로 전달) 및 바이너리 응답 전용 예외 변환기(`toBinaryHttpException` — 에러 바디도 ArrayBuffer로 오므로 JSON 디코드 시도 후 실패 시 메시지로 폴백).
+- `KnowledgeProxyController`에 `GET :id/file` 라우트 추가, 원본 바이트를 그대로 스트리밍.
+- 테스트: `ai-service-py-http.service.spec.ts`, `knowledge-proxy.controller.spec.ts` 신규(총 45/45 gateway 유닛 테스트 통과). 작성 중 `Buffer.from('hello world').buffer`가 Node의 문자열 풀링 할당 때문에 실제 문자열 바이트보다 훨씬 큰 공유 `ArrayBuffer`를 반환한다는 걸 발견 — 정확한 크기의 버퍼가 필요한 mock에는 `new TextEncoder().encode(str).buffer`를 써야 함(다른 테스트는 이미 이 패턴을 쓰고 있었음).
+
+### 프론트엔드
+- `SourceRef`에 `score?: number` 추가, `getDocumentFile(documentId)` API(blob 응답) 신설.
+- `AiService.tsx`: 근거 목록을 `score` 내림차순으로 정렬해 렌더링하고 각 항목에 "관련도 NN%" 배지를 표시. 각 근거 항목에 "원문 보기" 버튼을 추가 — 클릭 시 `getDocumentFile`로 blob을 받아 `URL.createObjectURL` + `window.open`으로 새 탭에 연다(블롭 URL은 60초 후 `revokeObjectURL`로 정리).
+- 테스트 2건 추가(관련도 순 정렬/배지 표시, "원문 보기" 클릭 시 API 호출 및 새 탭 오픈 검증). 프론트 전체 156/156 통과.
+
+### 배포
+- `ai-service-py`, `gateway`, `frontend` 이미지 재빌드 후 재기동, 부팅 로그로 `/ai/knowledge/documents/:id/file` 라우트 등록 확인.
+
+### 비요구사항 처리
+- 페이지 번호/문자 오프셋 수준의 정밀 위치 안내는 이번 범위에서 제외했다 — "원문 보기"는 파일 전체를 새 탭에서 여는 수준까지만 구현. 필요해지면 후속 SPEC에서 다룬다.
