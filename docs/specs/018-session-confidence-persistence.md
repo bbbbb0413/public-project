@@ -1,7 +1,7 @@
 ---
 id: SPEC-018
 title: 대화 세션 영속화 시 신뢰도 메타데이터 저장 누락 수정 및 신뢰도 수준별 배지 시각화
-status: ready
+status: done
 targets: [python-server, front]
 stages: [backend, frontend, qa]
 priority: normal
