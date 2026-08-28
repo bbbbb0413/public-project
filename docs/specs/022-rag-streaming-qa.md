@@ -1,7 +1,7 @@
 ---
 id: SPEC-022
 title: 스트리밍 RAG 질문 — 진행 단계 정리, SSE 재연결 클라이언트 연동, 멱등 재제출
-status: draft
+status: done
 targets: [server, front]
 stages: [backend, frontend]
 priority: high
@@ -43,4 +43,21 @@ priority: high
 - RAG 검색/생성 알고리즘 자체 개선(Python 파이프라인의 검색 품질) — 이 문서는 전달/표시 계층만 다룬다.
 
 ## 구현 기록
-(구현 완료 후 작성)
+
+**완료 (2026-08-28)**
+
+- **SSE 재연결 클라이언트 연동** (`public-front/src/api/ai.ts`)
+  - `askQuestionStream`/`subscribeIngestJob`가 각자 중복 구현하던 fetch+reader+버퍼 파싱 루프를 `connectJobStream` 공용 헬퍼로 통합했다.
+  - `parseSseEvent`가 `id:` 라인도 파싱하도록 확장하고, `connectJobStream`이 마지막으로 받은 이벤트 id를 추적하다가 fetch/스트림 자체가 예외로 끊기면(네트워크 오류 등) `Last-Event-ID` 헤더에 실어 최대 3회, 지수 백오프(1s/2s/3s)로 재접속한다. done/error 정상 종료나 터미널 이벤트 없는 자연 종료는 기존 동작을 그대로 유지해 회귀를 막았다.
+  - 재접속 로직을 검증하는 신규 테스트(`ai.test.ts`)를 추가했다 — 스트림이 첫 청크 이후 끊기면 두 번째 fetch 호출에 `Last-Event-ID: '1'`이 실리는지 확인.
+- **단순 질문 경로 진행 단계 보강** (`public-python-server/.../ask_requested_consumer.py`)
+  - 기존엔 "complex"(에이전틱) 경로만 `searching/generating/critiquing/refining` progress 이벤트를 냈고, 대부분인 단순 질문 경로는 아무 신호 없이 곧장 답변이 나왔다(사용자 입장에선 아무 표시 없이 멈춰 보임).
+  - 단순 경로 진입 시 `searching` 이벤트를 먼저 발행하고, 첫 콘텐츠 청크(근거 문서 or 토큰) 직전에 `generating` 이벤트를 한 번 발행하도록 최소한으로 보강했다. `confidence`/`missing` 필드는 실제 값이 없으므로 아예 포함하지 않는다.
+  - 프론트 `AgentProgress` 타입의 `confidence`/`missing`을 optional로 바꿔, 값이 없을 때 "신뢰도 0%" 같은 오해 소지가 있는 배지가 뜨지 않도록 했다(`AiService.tsx`의 기존 `!== undefined` 폴백 로직은 손대지 않고 타입만 맞췄다).
+  - 기존 "단순 경로는 progress를 전혀 안 보낸다"를 검증하던 테스트를 새 기대값(searching → generating 2건)으로 갱신했다.
+- **RAG 질문 생성 멱등성** (`apps/gateway/src/ai/job`)
+  - payment의 idempotencyKey 패턴([[019-payment-scale-architecture-roadmap]])을 그대로 따랐다. 프론트가 질문 제출마다 `createIdempotencyKey()`(payment/ai가 공유하도록 `src/utils/idempotency-key.ts`로 추출)로 키를 만들어 `POST /ai/rag/jobs` 바디에 실어 보낸다.
+  - `JobStoreService.createJob`이 `SET NX`로 먼저 잡ID를 선점하고, 선점 실패 시(동시 중복 요청) 기존 잡을 그대로 반환한다(`{job, isNew}`). `isNew`가 false면 `JobController`가 Kafka `ask.requested`를 재발행하지 않는다 — 상태값(`queued` 등)으로 판별하면 아직 처리 전인 기존 잡에 대해 이중 발행될 수 있어 별도 플래그로 명시했다.
+  - `knowledge-job.controller.ts`의 기존 `createJob` 호출부(멱등키 미사용)도 반환 타입 변경에 맞춰 갱신했다 — 동작은 그대로([[025-knowledge-document-ingest]] 범위에서 별도로 다룸).
+- 검증: 프론트 전체 154개 테스트, 게이트웨이 유닛 40개, 파이썬 RAG 유닛 17개(ruff 통과) 모두 통과. `tsc -b`(프론트/게이트웨이) 클린. `docker compose build gateway ai-service-py frontend` 후 재기동해 라우트 매핑과 무오류 기동을 로그로 확인했다.
+- **다루지 않은 것**: 진행 단계 라벨을 "검색·생성·검토·보완" 4단계 고정 문구로 강제 통일하지는 않았다 — 기존 `PHASE_LABELS`(searching/generating/critiquing/refining)를 그대로 재사용했고, 이게 명세서 문구와 자연스럽게 대응된다고 판단했다. 실제 로그인 세션으로 브라우저에서 질문을 던져 SSE가 눈에 보이게 재연결되는지까지는 확인하지 못했다(테스트로만 검증) — 로그인 계정이 없다.
