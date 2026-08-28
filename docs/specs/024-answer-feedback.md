@@ -1,8 +1,8 @@
 ---
 id: SPEC-024
 title: 답변 정확도 평가 및 피드백 — 신규 기능
-status: draft
-targets: [server, front]
+status: done
+targets: [python-server, server, front]
 stages: [backend, frontend]
 priority: high
 ---
@@ -39,4 +39,43 @@ priority: high
 - 다른 사용자의 평가 상세 열람 — 명세서가 명시적으로 막음.
 
 ## 구현 기록
-(구현 완료 후 작성)
+
+**저장 위치는 배경에 적힌 판단대로 `ai_service`(MongoDB)에 두었다.** NestJS 쪽에 새 도메인을 만들지 않았고, 게이트웨이는 프록시 역할만 한다. `targets` 를 `[python-server, server, front]` 로 바로잡았다 — 초안의 `[server, front]` 는 실제로 손대야 하는 저장소를 빠뜨리고 있었다(SPEC-023 도 같은 어긋남이 있었다).
+
+### 답변을 무엇으로 가리킬 것인가
+대화 턴에는 고유 식별자가 없다. `ConversationTurn` 은 세션 안 배열 위치로만 구분된다(`rag/schemas.py:115`). 두 선택지가 있었다.
+
+- 턴마다 `turn_id` 를 새로 넣는다 — 깔끔하지만 기존 세션의 답변은 평가할 수 없게 되고, 완료 이벤트 페이로드(SPEC-010)까지 바꿔야 새 답변에 id 가 닿는다.
+- `(sessionId, turnIndex)` 복합 키로 지목한다 — 마이그레이션도 스트리밍 계약 변경도 없다.
+
+**후자를 택했다.** 턴은 덧붙이기만 하고 중간에서 지우지 않으므로 위치가 나중에 밀리지 않는다. 세션이 `user_id` 를 들고 있어 소유권 검증이 이 경로에서 자연스럽게 나온다는 점도 컸다.
+
+### 백엔드 (python-server)
+- 새 기능 모듈 `feedback/` — `schemas`·`repository`·`service`·`router`·`dependencies`. 2026-08-27 에 옮겨온 기능별 모듈 규약을 그대로 따랐다.
+- MongoDB 컬렉션 `answer_feedback`. `(sessionId, turnIndex, userId)` 를 키로 upsert 하므로 "사용자당 답변 하나에 평가 하나" 가 저장소 수준에서 지켜진다. 갱신 시 `createdAt` 은 `$setOnInsert` 로 남겨 첫 제출 시각을 잃지 않는다.
+- `POST /rag/feedback`(제출·갱신), `GET /rag/feedback?sessionId=`(내 평가 목록). `userId` 는 둘 다 쿼리 파라미터로 받고 본문으로는 받지 않는다.
+- **소유권 검증**: `FeedbackService._assert_session_is_readable` 이 세션을 읽어 `get_user_id()` 를 대조한다. 없는 세션과 남의 세션을 **같은 404** 로 답해 세션 존재 여부를 흘리지 않는다. 조회 쿼리에도 `userId` 를 조건으로 넣었다 — 배경에 적힌 개인 프롬프트 노출 사고가 정확히 이 조건을 빠뜨려 생긴 것이었다.
+- 질문 턴(`role == "user"`)에 평가를 남기려 하면 400 으로 막는다.
+- 테스트 19건 신규(서비스 10, 스키마 9). python 전체 121 통과, ruff·mypy clean.
+
+### 게이트웨이 (NestJS)
+- `AnswerFeedbackProxyController`(`ai/feedback`) 신설. `req.session.uuid` 를 `userId` 쿼리로 채워 프록시한다. 본문에 `userId` 를 실어 보내도 `ValidationPipe` 의 `whitelist` 가 걷어낸다 — 테스트로 고정했다.
+- `BaseHttpService.post` 가 `params` 를 받지 못해 나머지 세 메서드(`get`/`patch`/`delete`)와 어긋나 있었다. 선택 필드로 추가했다(하위 호환).
+- 테스트 7건 신규. gateway 전체 52 통과, 빌드 통과.
+
+### 프론트엔드
+- `AnswerFeedback` 컴포넌트 분리(`AiService.tsx` 가 이미 883줄이라 더 키우지 않았다). 접힌 상태에서는 "이 답변을 평가하기" 또는 내 최신 평가 요약만 보이고, 눌러서 펼친다.
+- 정확도·유용성 각 1~5 라디오 + 의견(선택, 1000자). 라디오에 단계별 설명을 `aria-label` 로 붙였다 — 숫자만으로는 5가 좋은 쪽인지 알 수 없다.
+- 세션을 열 때 `getSessionFeedback` 으로 내 평가를 받아 턴 번호로 색인한다. 평가 조회가 실패해도 대화 자체는 열리게 두었다(부수 정보).
+- **저장 실패 시** 입력값을 그대로 둔 채 재시도를 안내한다. 실패했다고 지우면 사용자가 다시 쓸 마음을 잃는다.
+- 테스트 10건 신규(컴포넌트 8, 세션 통합 2). 프론트 전체 171 통과, tsc·eslint·build 통과.
+
+### 인덱스 정합성
+`chatLog` 는 `user`/`ai` 를 번갈아 덧붙이고 세션 복원 시 `detail.turns` 를 1:1 로 옮기므로, 화면의 메시지 위치가 곧 서버의 턴 번호다. 중단된 답변도 부분 응답이 턴으로 저장되므로(`ask_requested_consumer.py:166`) 어긋나지 않는다. 세션이 아직 없는 상태(`sessionId === null`)에서는 평가 UI 를 내보내지 않는다.
+
+### 비요구사항 처리
+- Kafka 감사 이벤트 발행은 넣지 않았다. 배경에도 "요구하면 필요할 수 있다" 는 조건부였고, 지금 이 값을 읽는 곳이 없다. 필요해지면 `core/events.py` 에 붙인다.
+- 관리자 통계 화면, 다른 사용자 평가 열람은 명세서 범위 밖이라 다루지 않았다.
+
+### 함께 발견한 것 (이번 범위 밖)
+`GET /rag/sessions/{id}` 와 `DELETE /rag/sessions/{id}` 에는 소유권 검증이 없다(`rag/router.py:23`, `:31`). 세션 id 만 알면 남의 대화를 읽고 지울 수 있다. 평가 경로는 자체적으로 소유권을 확인하므로 이 구멍을 물려받지 않지만, 세션 API 자체는 SPEC-021 이 결제에서 고친 것과 같은 종류의 문제를 안고 있다. 별도 spec 으로 다룰 만하다.
