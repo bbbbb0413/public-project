@@ -1,11 +1,20 @@
 ---
 id: SPEC-016
 title: 대화 세션 영속화 시 신뢰도 메타데이터 저장 누락 수정 및 신뢰도 수준별 배지 시각화
-status: draft
+status: rejected
 targets: [python-server, front]
 stages: [backend, frontend, qa]
 priority: normal
 ---
+
+> **폐기됨 (2026-08-29).** SPEC-018 이 같은 내용을 배송했다.
+>
+> 제목과 요구사항이 SPEC-018 과 같다. 기획이 이틀 간격으로 같은 결함을 두 번
+> 집어 각각 문서를 만들었고, `ready` 로 올라간 018 만 파이프라인이 처리했다.
+> 이 문서는 `draft` 로 남아 다음 실행에서 다시 집힐 수 있어 닫는다.
+>
+> 실제 수정은 `ask_requested_consumer.py` 의 `append_turn` 호출에
+> `confidence`/`missing` 을 넘기는 것이고, 2026-08-29 에 main 에 들어갔다.
 
 ## 배경 / 문제
 이전 작업(SPEC-011)에서 대화 세션 복원 시 출처 및 신뢰도/누락 정보 복원 인터페이스를 구현하였으나, `public-python-server/src/ai_service/rag/infrastructure/messaging/ask_requested_consumer.py:166-169` 에서 실시간 답변 스트리밍 완료 후 `session.append_turn` 호출 시 `sources` 만 전달하고 `confidence` 와 `missing` 인자를 전달하지 않아 세션 DB에 신뢰도 정보가 `None` 으로 저장되어 영속화되지 않는 결함이 발생하고 있다.
