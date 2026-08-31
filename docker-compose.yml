@@ -1,8 +1,7 @@
 services:
   db:
     container_name: db
-    platform: linux/x86_64
-    image: mysql:8.0.23
+    image: mysql:8.0.40
     command:
       - --default-authentication-plugin=mysql_native_password
       - --character-set-server=utf8mb4
@@ -129,7 +128,6 @@ services:
 
   identity:
     container_name: identity
-    platform: linux/x86_64
     build:
       context: ./public-server
       args:
@@ -174,7 +172,6 @@ services:
 
   payment:
     container_name: payment
-    platform: linux/x86_64
     build:
       context: ./public-server
       args:
@@ -225,7 +222,6 @@ services:
 
   chat-service:
     container_name: chat-service
-    platform: linux/x86_64
     build:
       context: ./public-server
       args:
@@ -251,7 +247,6 @@ services:
   # 회원가입 시 identity가 발행하는 'mail' 큐를 구독해서 실제 메일 발송(gRPC SendMail 호출)을 처리한다.
   admin-server:
     container_name: admin-server
-    platform: linux/x86_64
     build:
       context: ./public-server
       args:
@@ -282,7 +277,6 @@ services:
 
   gateway:
     container_name: gateway
-    platform: linux/x86_64
     build:
       context: ./public-server
       args:
