@@ -35,19 +35,33 @@ B를 건너뛰고 D로 갈 수 없다. C는 언제 해도 된다.
 | 임베딩 | Ollama → Google `gemini-embedding-001` | 호스트 의존(`host.docker.internal:11434`)이 사라지고 호스트 메모리가 빈다 |
 | 공개 경로 | Cloudflare Tunnel | 포트를 열지 않고 집 IP도 노출되지 않는다. WAF·레이트 리밋·Access 를 무료 티어에서 쓴다 |
 | Istio·Vault | 처음부터 도입 | 나중에 붙이면 이미 굳어진 배포·시크릿 참조를 전부 다시 손대야 한다. 처음부터 넣어 그 비용을 피한다 |
+| 기존 public-infra 벤더 차트 | **신뢰하지 않는다. vendoring을 폐기하고 업스트림 Helm 저장소 직접 참조로 바꾼다** | mysql·redis·harbor·vault·istio·prometheus·grafana·kiali-server 전부 예전에 `helm pull`로 통째로 받아 커밋해둔 스냅샷이라 버전이 멈춰있다. 다시 받아도(재벤더링) 시계만 되감을 뿐 같은 문제가 반복된다 — ArgoCD의 multi-source로 차트는 업스트림에서, 값(values)만 git에서 가져오면 이 문제 자체가 없어진다 |
+| actions-runner-controller | **쓰지 않지만 지우지도 않는다. appset 대상에서만 뺀다** | self-hosted 러너를 쓰지 않기로 한 결정과 부딪힌다. 이미 배선된 코드(원격 클러스터 대상)라 삭제 대신 미적용 상태로 둔다 |
 
 ## 착수 전에 고쳐야 할 것
 
-public-infra의 GitOps 구성은 지금 그대로는 동작하지 않는다.
+public-infra의 GitOps 구성은 지금 그대로는 동작하지 않는다. `public-infra`를 clone해
+직접 확인한 내용이다.
 
-| # | 문제 | 위치 |
-|---|---|---|
-| 1 | appset이 존재하지 않는 저장소 `bbbbb0413/infra.git` 을 가리킨다. 실제 저장소는 `public-infra` 다 | `charts/appsets/values.yaml`, `appsets/infra-applicationset.yaml` |
-| 2 | environment 가 `dev-test` 라 `dev-test.values.yaml` 을 찾지만, 차트에는 `dev.values.yaml` 만 있다 | `charts/appsets/values.yaml` |
-| 3 | infra ApplicationSet 이 전부 주석 처리되어 MySQL·Redis 차트가 배포되지 않는다 | `charts/appsets/values.yaml` |
-| 4 | 앱 차트가 `app/server` 하나뿐이고 `identity` 만 띄운다. 지금 필요한 것은 7개다 | `charts/app/` |
-| 5 | Kafka·MongoDB·Qdrant 차트가 없다 | `charts/infra/` |
-| 6 | `imageCredentials` 가 Harbor admin 계정을 그대로 쓴다 | `charts/app/server/dev.values.yaml` |
+| # | 문제 | 위치 | 상태 |
+|---|---|---|---|
+| 1 | appset이 존재하지 않는 저장소 `bbbbb0413/infra.git` 을 가리킨다. 실제 저장소는 `public-infra` 다 | `charts/appsets/values.yaml` 외 4곳(project-app/project-infra/argocd-application) | ✅ 완료 |
+| 2 | environment 가 `dev-test` 라 `dev-test.values.yaml` 을 찾지만, 차트에는 `dev.values.yaml` 만 있다 | `charts/appsets/values.yaml` | ✅ 완료 |
+| 3 | infra ApplicationSet 이 전부 주석 처리되어 MySQL·Redis 차트가 배포되지 않는다 | `charts/appsets/values.yaml` | 보류 — 9번(multi-source 전환)이 끝나야 켠다 |
+| 4 | 앱 차트가 `app/server` 하나뿐이고 `identity` 만 띄운다. 지금 필요한 것은 7개다 | `charts/app/` | 미착수 |
+| 5 | Kafka·MongoDB·Qdrant 차트가 없다 | `charts/infra/` | 미착수 (9번과 함께 multi-source로 신규 작성) |
+| 6 | `imageCredentials` 가 Harbor admin 계정을 그대로 쓴다 | `charts/app/server/dev.values.yaml` | 미착수 |
+| 7 | `infra-applicationset.yaml`(raw 매니페스트)과 `appsets/values.yaml`의 주석 처리된 `test-infra-appicationset` 항목이 같은 역할을 중복 정의한다 | `argocd/appsets/` | ✅ 완료 — raw 매니페스트 2개(`applicationset.yaml`, `infra-applicationset.yaml`)는 예전에 `kubectl apply`로 한 번 수동 적용해봤던 것으로, 지금 클러스터에 남아있는 리소스는 아니다(확인함). `charts/appsets` + `appset-manager` Application이 같은 일을 `automated: prune+selfHeal`로 대체하므로 raw 파일을 삭제했다 |
+| 8 | `actions-runner-controller`가 appset에 활성 상태로 배선돼 있다(`arc-crds-test`, 원격 클러스터 대상). self-hosted 러너를 쓰지 않기로 한 결정과 부딪힌다 | `argocd/charts/appsets/values.yaml`(`arc-crds-test`) | ✅ 완료 — `applications:` 블록을 주석 처리. 차트 파일·AppProject는 그대로 남겨둠 |
+| 9 | infra 차트(mysql·redis·harbor·vault·istio·prometheus·grafana·kiali-server)가 예전에 벤더링된 버전이다. 재벤더링이 아니라 vendoring 자체를 폐기하고 업스트림 Helm 저장소 직접 참조로 바꾼다 | `argocd/charts/infra/*` | 미착수 — appset 템플릿을 git directory 제너레이터에서 files 제너레이터로 바꾸고 컴포넌트별 `source.yaml`을 추가하는 설계가 먼저 필요하다 |
+
+부수 확인: `argocd/charts/infra/vault/unseal-key`는 `your_key_1` 같은 플레이스홀더
+템플릿이다 — 실제 유출된 키가 아니다. day-0에 `vault operator init` 결과를 어디에
+기록할지 보여주는 틀로 보인다.
+
+1·2·7·8번은 `public-infra`에서 직접 수정하고 `helm template`으로 렌더링까지
+확인했다(로컬에 클러스터가 없어 실제 sync 검증은 못 함). README.md도 죽은 코드
+설명을 걷어내고 실제 구조에 맞게 고쳤다.
 
 ## 리소스 배정
 
@@ -134,7 +148,7 @@ arm64로 올라간다.
 
 ## A1. public-infra 정합성 복구와 ArgoCD
 
-"착수 전에 고쳐야 할 것" 1~3번을 처리하고, 클러스터 목록에 로컬 항목을 추가한다.
+"착수 전에 고쳐야 할 것" 1~3, 7번을 처리하고, 클러스터 목록에 로컬 항목을 추가한다.
 
 ```yaml
 clusters:
@@ -145,10 +159,56 @@ clusters:
       environment: local
 ```
 
+**기존에 벤더링된 infra 차트는 신뢰하지 않는다 — 그리고 재벤더링도 하지 않는다.**
+mysql·redis·harbor·vault·istio·prometheus·grafana·kiali-server 전부 예전에 한 번
+`helm pull`로 통째로 받아 커밋해둔 스냅샷이다. 다시 최신 버전을 받아서 또 커밋해도
+그 순간부터 다시 낡기 시작한다 — 근본 해결이 아니라 시계를 되감는 것뿐이다.
+
+대신 **ArgoCD의 multi-source**로 전환한다. 차트 자체는 git에 두지 않고 업스트림
+Helm 저장소를 `targetRevision`으로 버전만 핀 해서 직접 참조하고, 값(values)만
+git(`ref: values`)에서 가져온다.
+
+```yaml
+sources:
+  - repoURL: https://charts.bitnami.com/bitnami
+    chart: mysql
+    targetRevision: 12.x.x        # 버전 업은 이 한 줄만 바꾸면 된다
+    helm:
+      valueFiles:
+        - $values/charts/infra/mysql/infra.values.yaml
+  - repoURL: https://github.com/bbbbb0413/public-infra.git
+    targetRevision: HEAD
+    ref: values
+```
+
+이러면 `charts/infra/mysql/` 같은 디렉토리엔 템플릿 수백 개 대신 값 파일 하나만
+남는다. **커스텀 값도 git으로 그대로 관리된다** — 위 예시가 그 방식이다. 여러
+값 파일을 겹쳐 쓰는 것(`common.values.yaml` + `local.values.yaml` 등)도, 지금
+appset이 쓰는 `{{values.environment}}.values.yaml` 템플릿 변수를
+`$values/.../{{values.environment}}.values.yaml`로 그대로 확장하는 것도 된다.
+버전 오래됨 문제도, 커스터마이징도 둘 다 해결된다.
+
+appset 템플릿(`infra-applicationset.yaml` 계열)을 지금의 `source:` 단일 항목에서
+`sources:` 리스트로 바꿔야 한다. Kafka·MongoDB·Qdrant(항목 5)는 처음부터 이
+방식으로 새로 붙인다 — vendoring할 스냅샷 자체가 없다.
+
+**actions-runner-controller는 적용하지 않는다.** self-hosted 러너를 쓰지 않기로 한
+결정(위 "확정된 전제")과 부딪힌다. `arc-crds-test` Application과
+`charts/infra/actions-runner-controller/` 차트 파일은 **지우지 않고** appset
+대상(`charts/infra/*`)에서만 빠지게 한다 — 나중에 원격 클러스터 트랙에서 다시
+논의한다.
+
+**항목 7(중복 정의) 조사가 선행이다.** `infra-applicationset.yaml`과
+`appsets/values.yaml`의 주석 처리된 항목 중 뭐가 실제로 적용되는 건지 확인하고
+하나로 정리한 뒤에 나머지를 고친다 — 안 그러면 어느 쪽을 고쳤는지 헷갈린다.
+
 ArgoCD를 `argocd/install/install.yaml` 로 설치하고 bootstrap Application을 건다.
 
 **완료 기준**: appset이 Application을 생성하고, 동기화 실패 사유가 "차트 없음" 이
-아니라 "차트 내용" 으로 좁혀진다.
+아니라 "차트 내용" 으로 좁혀진다. infra 차트들이 vendoring 없이 업스트림 Helm
+저장소를 `targetRevision`으로 핀 해서 참조하는 multi-source 구조로 바뀌었고,
+actions-runner-controller는 파일만 남아있을 뿐 어떤 Application에도 배포 대상으로
+잡히지 않는다.
 
 ## A2. 상태 저장소 5종
 
