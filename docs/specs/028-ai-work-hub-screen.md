@@ -1,7 +1,7 @@
 ---
 id: SPEC-028
 title: AI 작업 허브 화면 — 통합 패널 구조를 허브형 내비게이션으로 재구성
-status: draft
+status: ready
 targets: [front]
 stages: [frontend]
 priority: high

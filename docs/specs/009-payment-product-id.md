@@ -1,7 +1,7 @@
 ---
 id: SPEC-009
 title: 결제 응답에 상품 식별자(productId) 및 계정 식별자(accountId) 포함
-status: draft
+status: ready
 targets: [server, front]
 stages: [backend, frontend, qa]
 priority: normal

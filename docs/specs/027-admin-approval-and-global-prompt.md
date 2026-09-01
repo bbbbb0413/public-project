@@ -1,7 +1,7 @@
 ---
 id: SPEC-027
 title: 관리자 승인 및 전역 프롬프트 — 전역 프롬프트 API 관리자 권한 체크 부재 수정
-status: draft
+status: ready
 targets: [server, front]
 stages: [backend, frontend]
 priority: high
