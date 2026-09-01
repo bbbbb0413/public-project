@@ -1,7 +1,7 @@
 ---
 id: SPEC-025
 title: 문서 업로드 및 인제스트 — 용량 제한 정정, 단계별 진행 이벤트, 재시도 진입점
-status: ready
+status: done
 targets: [server, front]
 stages: [backend, frontend]
 priority: high
