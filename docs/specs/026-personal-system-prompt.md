@@ -1,7 +1,7 @@
 ---
 id: SPEC-026
 title: 개인 시스템 프롬프트 관리 — 다중 슬롯 전환, 소유자 필터 누락 취약점 수정
-status: ready
+status: done
 targets: [server, front]
 stages: [backend, frontend]
 priority: high
