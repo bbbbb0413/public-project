@@ -1,7 +1,7 @@
 ---
 id: SPEC-033
 title: 프롬프트 목록 조회 시 사용자 격리 필터 적용 및 타인 프롬프트 노출 취약점 수정
-status: ready
+status: done
 targets: [python-server, server]
 stages: [backend, qa]
 priority: high
