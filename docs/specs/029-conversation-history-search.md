@@ -1,7 +1,7 @@
 ---
 id: SPEC-029
 title: 대화 기록 조회 및 검색 — 키워드 검색, 답변 보관(북마크) 신규 추가
-status: ready
+status: done
 targets: [server, front]
 stages: [backend, frontend]
 priority: normal
