@@ -1,7 +1,7 @@
 ---
 id: SPEC-031
 title: admin-server 단위 테스트 스위트 및 scoped_test 게이트 연결
-status: ready
+status: done
 targets: [server]
 stages: [backend, qa]
 priority: normal
