@@ -1,7 +1,7 @@
 ---
 id: SPEC-034
 title: 지식베이스 문서 인제스트 파이프라인 단계별 진행 이벤트 발행 및 진행률 표시 연동
-status: ready
+status: done
 targets: [python-server, front]
 stages: [backend, frontend, qa]
 priority: normal
