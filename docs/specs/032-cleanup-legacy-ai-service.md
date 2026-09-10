@@ -1,7 +1,7 @@
 ---
 id: SPEC-032
 title: 레거시 NestJS ai-service 테스트 및 빌드 설정 정리
-status: ready
+status: done
 targets: [server]
 stages: [backend, qa]
 priority: normal
