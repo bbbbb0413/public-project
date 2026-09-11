@@ -1,7 +1,7 @@
 ---
 id: SPEC-035
 title: 대화 세션 목록 키워드 검색 지원 및 사이드바 검색창 연동
-status: ready
+status: done
 targets: [python-server, server, front]
 stages: [backend, frontend, qa]
 priority: normal
