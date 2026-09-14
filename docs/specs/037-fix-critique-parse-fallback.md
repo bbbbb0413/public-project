@@ -1,7 +1,7 @@
 ---
 id: SPEC-037
 title: RAG 비평 파싱 실패 시 기본 신뢰도 왜곡 방지 및 안전한 폴백 처리
-status: ready
+status: done
 targets: [python-server]
 stages: [backend, qa]
 priority: normal
