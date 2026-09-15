@@ -1,7 +1,7 @@
 ---
 id: SPEC-038
 title: 로그인/회원가입 응답 내 계정 식별자(accountId) 전달 및 프로필 메일 발송 연동
-status: ready
+status: done
 targets: [server, front]
 stages: [backend, frontend, qa]
 priority: normal
