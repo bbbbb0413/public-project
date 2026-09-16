@@ -1,7 +1,7 @@
 ---
 id: SPEC-039
 title: 관리자 AI API 클라이언트 토큰 바인딩 수정 및 403 권한 오류 해결
-status: ready
+status: done
 targets: [front]
 stages: [frontend, qa]
 priority: normal
