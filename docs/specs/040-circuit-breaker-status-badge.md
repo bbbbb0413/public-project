@@ -1,7 +1,7 @@
 ---
 id: SPEC-040
 title: LLM Circuit Breaker 상태값 대소문자 및 형식 불일치 수정과 배지 렌더링 정상화
-status: ready
+status: done
 targets: [front]
 stages: [frontend, qa]
 priority: normal
