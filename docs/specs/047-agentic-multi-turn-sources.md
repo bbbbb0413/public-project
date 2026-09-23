@@ -1,7 +1,7 @@
 ---
 id: SPEC-047
 title: 에이전틱 RAG 다회차 검색 출처(Sources) 갱신 및 누적 전달
-status: ready
+status: done
 targets: [python-server]
 stages: [backend, qa]
 priority: normal
