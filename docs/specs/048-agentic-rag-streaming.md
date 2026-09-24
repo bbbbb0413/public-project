@@ -1,7 +1,7 @@
 ---
 id: SPEC-048
 title: 에이전틱 RAG 루프 중 실시간 토큰 스트리밍 지원
-status: ready
+status: done
 targets: [python-server]
 stages: [backend, qa]
 priority: normal
