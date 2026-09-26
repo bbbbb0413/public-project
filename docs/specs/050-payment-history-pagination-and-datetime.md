@@ -1,7 +1,7 @@
 ---
 id: SPEC-050
 title: 결제 내역 페이징 메타데이터 연동 및 결제 일시 표시
-status: ready
+status: done
 targets: [server, front]
 stages: [backend, frontend, qa]
 priority: normal
