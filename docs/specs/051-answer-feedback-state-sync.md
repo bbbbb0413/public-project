@@ -1,7 +1,7 @@
 ---
 id: SPEC-051
 title: 답변 평가(피드백) 비동기 상태 동기화 및 수정 폼 복원 개선
-status: ready
+status: done
 targets: [front]
 stages: [frontend, qa]
 priority: normal
