@@ -1,7 +1,7 @@
 ---
 id: SPEC-054
 title: 단발성 RAG 질의 신뢰도 산출 및 근거 문서 미참조 답변 경고 표시
-status: ready
+status: done
 targets: [python-server, front]
 stages: [backend, frontend, qa]
 priority: normal
