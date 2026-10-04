@@ -1,7 +1,7 @@
 ---
 id: SPEC-058
 title: 대화 세션 삭제 확인 대화상자 및 안전장치 추가
-status: ready
+status: done
 targets: [front]
 stages: [frontend, qa]
 priority: normal
