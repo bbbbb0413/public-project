@@ -1,7 +1,7 @@
 ---
 id: SPEC-061
 title: 지식베이스 문서 목록 업로드 일시 표시 및 일시 포맷팅 통일
-status: ready
+status: done
 targets: [front]
 stages: [frontend, qa]
 priority: normal
