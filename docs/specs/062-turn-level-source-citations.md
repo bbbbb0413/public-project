@@ -1,7 +1,7 @@
 ---
 id: SPEC-062
 title: AI 답변 메시지별 근거 출처(참고 문서) 표시 및 다중 턴 출처 유지
-status: ready
+status: done
 targets: [front]
 stages: [frontend, qa]
 priority: normal
