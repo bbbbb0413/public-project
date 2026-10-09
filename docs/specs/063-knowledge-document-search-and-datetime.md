@@ -1,7 +1,7 @@
 ---
 id: SPEC-063
 title: 지식베이스 문서 목록 검색(필터링) 및 업로드 일시 표시
-status: ready
+status: done
 targets: [front]
 stages: [frontend, qa]
 priority: normal
