@@ -1,7 +1,7 @@
 ---
 id: SPEC-064
 title: 답변 평가(피드백) 제출 토스트 알림 및 평가 점수별 상태 요약 시각화
-status: ready
+status: done
 targets: [front]
 stages: [frontend, qa]
 priority: normal
