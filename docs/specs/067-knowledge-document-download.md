@@ -1,7 +1,7 @@
 ---
 id: SPEC-067
 title: 지식베이스 문서 목록 내 원본 파일 다운로드 기능 연동 및 상태 피드백
-status: ready
+status: done
 targets: [front]
 stages: [frontend, qa]
 priority: normal
