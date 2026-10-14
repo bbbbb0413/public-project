@@ -1,7 +1,7 @@
 ---
 id: SPEC-068
 title: 답변 평가(피드백) 삭제(철회) 지원 및 UI 연동
-status: ready
+status: done
 targets: [python-server, server, front]
 stages: [backend, frontend, qa]
 priority: normal
