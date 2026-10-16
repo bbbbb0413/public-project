@@ -45,11 +45,10 @@ targets:
     path: public-front
     repo: true
     remote: origin
-    # 저장소 전체 게이트는 손대기 전부터 실패합니다 (eslint 23건).
-    # 이 리허설이 건드리는 src/utils 만 검사하도록 좁혔습니다.
-    # 경로가 아직 없어도 통과해야 하므로 unmatched 를 오류로 보지 않습니다.
     gates:
-      lint: "npx eslint --no-error-on-unmatched-pattern \"src/utils/**/*.{ts,tsx}\""
+      # 저장소 전체를 검사합니다 (2026-10-17). 기존 에러 17건을 고친 뒤 src/utils
+      # 로 좁혀 두었던 범위를 풀었습니다. 경고는 게이트를 막지 않습니다.
+      lint: "npx eslint ."
       build: "npm run build"
       # 테스트는 전체를 돌립니다 (2026-10-16). src/utils 만 돌리던 동안 컴포넌트
       # 테스트를 깨는 PR 이 그대로 통과했고, auto_merge 를 켠 뒤로는 main 까지 갑니다.
