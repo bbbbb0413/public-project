@@ -1,7 +1,7 @@
 ---
 id: SPEC-045
 title: 시스템 프롬프트 설정 모달 컴포넌트 분리 및 상태 관리 모듈화
-status: ready
+status: done
 targets: [front]
 stages: [frontend, qa]
 priority: normal

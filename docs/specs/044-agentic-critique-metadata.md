@@ -1,7 +1,7 @@
 ---
 id: SPEC-044
 title: RAG 비평 메타데이터 및 다중 턴 추론 요약 전달 연동
-status: ready
+status: done
 targets: [python-server, front]
 stages: [backend, frontend, qa]
 priority: normal
