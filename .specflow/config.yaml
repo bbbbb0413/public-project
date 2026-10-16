@@ -32,9 +32,13 @@ git:
   base_branch: main
   push: true
   # P8 리허설로 결과 품질을 확인한 뒤 draft 로 올렸습니다 (2026-08-19).
-  # 머지는 항상 사람이 합니다. 되돌리려면 none 으로 바꾸세요 —
-  # none 이면 원격에 아무것도 올리지 않습니다.
+  # 되돌리려면 none 으로 바꾸세요 — none 이면 원격에 아무것도 올리지 않습니다.
   pr: draft
+  # 모든 스테이지를 통과한 run 의 PR 을 머지까지 합니다 (2026-10-16).
+  # 사람이 머지하지 않아 draft PR 이 39개 쌓였고, 머지되지 않은 기능을 기획이
+  # 다시 기획해 같은 spec 이 열 번 만들어졌습니다. 실패한 run 은 draft 로 남습니다.
+  # 사람이 머지하던 방식으로 돌아가려면 false 로 바꾸세요.
+  auto_merge: true
 
 targets:
   front:
@@ -47,7 +51,9 @@ targets:
     gates:
       lint: "npx eslint --no-error-on-unmatched-pattern \"src/utils/**/*.{ts,tsx}\""
       build: "npm run build"
-      test: "npx vitest run src/utils --passWithNoTests"
+      # 테스트는 전체를 돌립니다 (2026-10-16). src/utils 만 돌리던 동안 컴포넌트
+      # 테스트를 깨는 PR 이 그대로 통과했고, auto_merge 를 켠 뒤로는 main 까지 갑니다.
+      test: "npx vitest run --passWithNoTests"
 
   python-server:
     path: public-python-server
@@ -73,7 +79,7 @@ targets:
       test: "npx jest --config apps/gateway/jest-unit.json --testMatch \"**/libs/common/src/utils/**/*.spec.ts\" --passWithNoTests"
     # spec 이 건드린 앱만 골라 돌린다. test:all 은 5개 스위트를 순차 실행해 느리다.
     scoped_test:
-      apps/ai-service: "pnpm test:ai"
+      apps/admin-server: "pnpm test:admin"
       apps/chat-service: "pnpm test:chat"
       apps/gateway: "pnpm test:gateway"
       apps/identity: "pnpm test:identity"
