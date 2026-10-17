@@ -102,9 +102,9 @@ agent:
       prompt_via: stdin
 
   # 스테이지 또는 스테이지.타깃 단위로 다른 에이전트를 지정한다.
-  # overrides:
-  #   qa: claude
-  #   backend.server: claude
+  # 리뷰는 구현(agy)과 다른 에이전트가 한다. 자기 코드를 자기가 평가하지 않게.
+  overrides:
+    review: claude
 
 stages:
   - name: backend
@@ -125,6 +125,14 @@ infra:
   down: "docker compose down"
   health: "docker compose ps --format json"
   wait_timeout: 180
+
+# PR 전에 리뷰어가 변경을 본다 (2026-10-17). auto_merge 를 켠 뒤로 게이트만
+# 통과하면 main 까지 가서, 범위 밖 변경·테스트 약화·삼킨 에러를 막을 단계가
+# 없었다. critical·high 지적이 수정 2회 뒤에도 남으면 PR 은 draft 로 남는다.
+review:
+  enabled: true
+  block_on: [critical, high]
+  max_fix_rounds: 2
 
 repair:
   max_attempts: 3
