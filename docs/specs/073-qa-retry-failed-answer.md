@@ -1,7 +1,7 @@
 ---
 id: SPEC-073
 title: AI 답변 생성 실패 시 인라인 에러 표시 및 질문 재시도 지원
-status: ready
+status: done
 targets: [front]
 stages: [frontend, qa]
 priority: normal
