@@ -1,7 +1,7 @@
 ---
 id: SPEC-074
 title: 답변 생성 중단 시 인라인 중단 상태 보존 및 미완성 안내·질문 복원 지원
-status: ready
+status: done
 targets: [front]
 stages: [frontend, qa]
 priority: normal
