@@ -1,7 +1,7 @@
 ---
 id: SPEC-075
 title: RAG 답변의 확인하지 못한 항목(missing) 보완 질문 원클릭 연계 및 불완전 답변 주의 안내
-status: ready
+status: done
 targets: [front]
 stages: [frontend, qa]
 priority: normal
