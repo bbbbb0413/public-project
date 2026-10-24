@@ -1,7 +1,7 @@
 ---
 id: SPEC-081
 title: 에이전틱 RAG 응답 스트리밍 추론 라인 필터링 및 예산 소진 시 신뢰도 산출 연동
-status: ready
+status: done
 targets: [python-server]
 stages: [backend, qa]
 priority: normal
