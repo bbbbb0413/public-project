@@ -1,7 +1,7 @@
 ---
 id: SPEC-082
 title: AI 답변 및 대화 북마크(보관함) API 구현 및 영속화 연동
-status: ready
+status: done
 targets: [python-server]
 stages: [backend, qa]
 priority: normal
