@@ -1,7 +1,7 @@
 ---
 id: SPEC-083
 title: 지식베이스 색인 청크 목록 조회 API 연동 및 청크 열람 모달
-status: ready
+status: done
 targets: [front]
 stages: [frontend, qa]
 priority: normal
