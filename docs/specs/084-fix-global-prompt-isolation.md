@@ -1,7 +1,7 @@
 ---
 id: SPEC-084
 title: 관리자 전역 프롬프트 관리 프록시의 사용자 격리 오염 수정 및 개인 슬롯 분리
-status: ready
+status: done
 targets: [server, python-server]
 stages: [backend, qa]
 priority: normal
