@@ -1,7 +1,7 @@
 ---
 id: SPEC-085
 title: 대화 세션 복원 시 답변 중단 상태(isCancelled) 영속화 및 미완성 답변 복원
-status: ready
+status: done
 targets: [python-server, front]
 stages: [backend, frontend, qa]
 priority: normal
