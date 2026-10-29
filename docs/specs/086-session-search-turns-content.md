@@ -1,7 +1,7 @@
 ---
 id: SPEC-086
 title: 대화 세션 검색 범위 본문(turns.content) 확장 및 검색 스니펫 제공
-status: ready
+status: done
 targets: [python-server]
 stages: [backend, qa]
 priority: normal
