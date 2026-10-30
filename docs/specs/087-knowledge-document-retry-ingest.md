@@ -1,7 +1,7 @@
 ---
 id: SPEC-087
 title: 지식베이스 실패 문서 원본 기반 재인제스트 API 연동 및 재시도 UI 개선
-status: ready
+status: done
 targets: [front, python-server, server]
 stages: [backend, frontend, qa]
 priority: normal
