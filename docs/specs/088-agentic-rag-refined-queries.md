@@ -1,7 +1,7 @@
 ---
 id: SPEC-088
 title: 에이전틱 RAG 다회차 정제 쿼리(next_query) 추적 및 진행 이벤트·세션 영속화 연동
-status: ready
+status: done
 targets: [python-server, front]
 stages: [backend, frontend, qa]
 priority: normal
