@@ -1,7 +1,7 @@
 ---
 id: SPEC-089
 title: LLM 비용 집계 상세 지표(토큰·호출 수) 보존 및 기간별 필터 연동
-status: ready
+status: done
 targets: [python-server, front]
 stages: [backend, frontend, qa]
 priority: normal
