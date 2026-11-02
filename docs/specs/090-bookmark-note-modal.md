@@ -1,7 +1,7 @@
 ---
 id: SPEC-090
 title: AI 답변 북마크 시 메모(note) 입력 모달 연동 및 보관함 메모 표시 개선
-status: ready
+status: done
 targets: [front]
 stages: [frontend, qa]
 priority: normal
