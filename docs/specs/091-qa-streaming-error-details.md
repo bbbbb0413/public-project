@@ -1,7 +1,7 @@
 ---
 id: SPEC-091
 title: RAG 질문 스트리밍 실패 시 원인별 세부 에러 메시지 노출 및 상단 에러 배너 덮어쓰기 수정
-status: ready
+status: done
 targets: [front]
 stages: [frontend, qa]
 priority: normal
