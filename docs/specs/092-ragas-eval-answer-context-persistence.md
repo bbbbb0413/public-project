@@ -1,7 +1,7 @@
 ---
 id: SPEC-092
 title: RAGAS 품질 평가 결과의 답변·컨텍스트 영속화 및 관리자 상세 열람 연동
-status: ready
+status: done
 targets: [python-server, front]
 stages: [backend, frontend, qa]
 priority: normal
