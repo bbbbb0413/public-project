@@ -1,7 +1,7 @@
 ---
 id: SPEC-093
 title: 저신뢰도(Low Confidence) RAG 답변 주의 경고 배너 표시 및 질문 구체화 연동
-status: ready
+status: done
 targets: [front]
 stages: [frontend, qa]
 priority: normal
