@@ -1,7 +1,7 @@
 ---
 id: SPEC-094
 title: 실시간 채팅 발신자 닉네임 표시 및 이전 대화 조회 커서 연동
-status: ready
+status: done
 targets: [server, front]
 stages: [backend, frontend, qa]
 priority: normal
