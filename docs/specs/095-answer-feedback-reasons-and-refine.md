@@ -1,7 +1,7 @@
 ---
 id: SPEC-095
 title: 답변 평가(피드백) 불만족 사유 빠른 선택 및 질문 보완 재질문 연계
-status: ready
+status: done
 targets: [front]
 stages: [frontend, qa]
 priority: normal
