@@ -1,7 +1,7 @@
 ---
 id: SPEC-096
 title: AI 답변 참고 문서(출처)의 청크 번호 표기(1-based) 통일 및 문서 색인 청크 모달 연동
-status: ready
+status: done
 targets: [front]
 stages: [frontend, qa]
 priority: normal
