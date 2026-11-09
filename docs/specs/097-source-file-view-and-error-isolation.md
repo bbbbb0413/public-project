@@ -1,7 +1,7 @@
 ---
 id: SPEC-097
 title: AI 답변 참고 문서 원문 보기 팝업 차단 및 빈 탭 잔류 결함 수정과 에러 상태 격리
-status: ready
+status: done
 targets: [front, server]
 stages: [backend, frontend, qa]
 priority: normal
