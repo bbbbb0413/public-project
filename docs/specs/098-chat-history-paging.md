@@ -1,7 +1,7 @@
 ---
 id: SPEC-098
 title: 실시간 채팅 이전 대화 페이징 소켓 이벤트 연동 및 이전 대화 더보기 UI 구현
-status: ready
+status: done
 targets: [server, front]
 stages: [backend, frontend, qa]
 priority: normal
