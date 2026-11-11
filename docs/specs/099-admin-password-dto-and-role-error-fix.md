@@ -1,7 +1,7 @@
 ---
 id: SPEC-099
 title: 관리자 비밀번호 변경 DTO 불일치 해결 및 사용자 관리 API 예외 처리 개선
-status: ready
+status: done
 targets: [server, front]
 stages: [backend, frontend, qa]
 priority: normal
