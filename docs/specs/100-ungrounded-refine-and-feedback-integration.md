@@ -1,7 +1,7 @@
 ---
 id: SPEC-100
 title: 근거 미참조·저신뢰도 RAG 답변의 피드백 연계 개선 및 불만족 사유 기반 재질문 연동
-status: ready
+status: done
 targets: [front]
 stages: [frontend, qa]
 priority: normal
