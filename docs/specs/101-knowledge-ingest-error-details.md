@@ -1,7 +1,7 @@
 ---
 id: SPEC-101
 title: 지식베이스 문서 인제스트 실패 원인 저장 및 에러 상세 노출
-status: ready
+status: done
 targets: [python-server, front]
 stages: [backend, frontend, qa]
 priority: normal
