@@ -1,7 +1,7 @@
 ---
 id: SPEC-102
 title: 보관함 답변 클릭 시 해당 턴 위치 이동·강조 표시 및 보관 항목 삭제 확인 대화상자 추가
-status: ready
+status: done
 targets: [front]
 stages: [frontend, qa]
 priority: normal
