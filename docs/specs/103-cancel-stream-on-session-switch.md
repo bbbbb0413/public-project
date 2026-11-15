@@ -1,7 +1,7 @@
 ---
 id: SPEC-103
 title: 답변 생성 스트리밍 중 새 대화 시작 및 세션 전환 시 이전 작업 취소 연동과 안전장치 추가
-status: ready
+status: done
 targets: [front]
 stages: [frontend, qa]
 priority: normal
