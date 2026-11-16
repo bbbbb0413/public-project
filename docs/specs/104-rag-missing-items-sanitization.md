@@ -1,7 +1,7 @@
 ---
 id: SPEC-104
 title: RAG 답변 확인하지 못한 항목(missing)의 시스템 상태 오염 분리 및 왜곡된 후속 질문 방지
-status: ready
+status: done
 targets: [python-server, front]
 stages: [backend, frontend, qa]
 priority: normal
