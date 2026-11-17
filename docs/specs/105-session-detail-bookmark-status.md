@@ -1,7 +1,7 @@
 ---
 id: SPEC-105
 title: 단건 대화 세션 상세 조회 시 북마크 상태(isBookmarked) 전달 및 상단 헤더 보관 연동
-status: ready
+status: done
 targets: [python-server, front]
 stages: [backend, frontend, qa]
 priority: normal
