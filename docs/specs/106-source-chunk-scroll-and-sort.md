@@ -1,7 +1,7 @@
 ---
 id: SPEC-106
 title: AI 답변 참고 문서(출처)의 개별 청크 모달 위치 이동·강조 연동 및 출처 청크 번호 오름차순 정렬
-status: ready
+status: done
 targets: [front]
 stages: [frontend, qa]
 priority: normal
