@@ -1,7 +1,7 @@
 ---
 id: SPEC-107
 title: 답변 평가 불만족 사유 태그 요약 표시 및 부정확 답변 경고 상태 시각화 연동
-status: ready
+status: done
 targets: [front]
 stages: [frontend, qa]
 priority: normal
