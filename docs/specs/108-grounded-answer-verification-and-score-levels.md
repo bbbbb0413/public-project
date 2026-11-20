@@ -1,7 +1,7 @@
 ---
 id: SPEC-108
 title: AI 답변 근거 충분 검증 배지 및 출처 청크 관련도 수준별 시각화와 근거 미발견 판정 결함 수정
-status: ready
+status: done
 targets: [front]
 stages: [frontend, qa]
 priority: normal
