@@ -1,7 +1,7 @@
 ---
 id: SPEC-109
 title: AI 답변 보관(북마크) 상태의 대화 세션 턴 연동 및 답변 버블 내 보관 상태 표시·토글 해제 지원
-status: ready
+status: done
 targets: [front, python-server, server]
 stages: [backend, frontend, qa]
 priority: normal
