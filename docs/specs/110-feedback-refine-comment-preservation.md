@@ -1,7 +1,7 @@
 ---
 id: SPEC-110
 title: 답변 평가(불만족 피드백) 기반 재질문 시 사용자 상세 의견 유실 수정 및 재질문 편의성 개선
-status: ready
+status: done
 targets: [front]
 stages: [frontend, qa]
 priority: normal
