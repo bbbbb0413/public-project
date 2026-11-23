@@ -1,7 +1,7 @@
 ---
 id: SPEC-111
 title: AI 답변 출처 청크 열람 모달의 전체 청크 수 오표시 결함 수정 및 인용 청크 관련도 점수 시각화 연동
-status: ready
+status: done
 targets: [front]
 stages: [frontend, qa]
 priority: normal
