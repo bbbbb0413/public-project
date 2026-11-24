@@ -1,7 +1,7 @@
 ---
 id: SPEC-112
 title: 단순 RAG 질의의 답변 근거 비평(Critique) 연동 및 검증 완료 배지 오표시 방지
-status: ready
+status: done
 targets: [python-server, front]
 stages: [backend, frontend, qa]
 priority: normal
