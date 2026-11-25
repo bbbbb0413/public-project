@@ -1,7 +1,7 @@
 ---
 id: SPEC-113
 title: 지식베이스 문서 재색인 실패 시 기존 벡터 청크 유실 방지 및 안전한 롤백 처리
-status: ready
+status: done
 targets: [python-server]
 stages: [backend, qa]
 priority: normal
