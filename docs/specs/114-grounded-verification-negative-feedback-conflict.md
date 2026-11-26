@@ -1,7 +1,7 @@
 ---
 id: SPEC-114
 title: 사용자 부정확 평가 시 답변 근거 검증 완료 배지 오표시 방지 및 상호 배타성 보장
-status: ready
+status: done
 targets: [front]
 stages: [frontend, qa]
 priority: normal
