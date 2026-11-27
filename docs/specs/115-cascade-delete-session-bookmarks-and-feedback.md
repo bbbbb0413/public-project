@@ -1,7 +1,7 @@
 ---
 id: SPEC-115
 title: 대화 세션 삭제 시 연관 답변 북마크 및 피드백 데이터 연쇄 정리와 고아 보관 항목 방지
-status: ready
+status: done
 targets: [python-server, front]
 stages: [backend, frontend, qa]
 priority: normal
