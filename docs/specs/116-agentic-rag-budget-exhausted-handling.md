@@ -1,7 +1,7 @@
 ---
 id: SPEC-116
 title: 에이전틱 RAG 예산 소진 시 비평 생략 안내 및 검증 완료 배지 오표시 방지와 상태 영속화
-status: ready
+status: done
 targets: [python-server, front]
 stages: [backend, frontend, qa]
 priority: normal
